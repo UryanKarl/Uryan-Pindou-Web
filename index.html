@@ -8,11 +8,19 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
   /* ============ 像素字体 ============ */
-  @font-face{
-    font-family: 'Zpix';
-    src: url('https://cdn.jsdelivr.net/gh/SolidZORO/zpix-pixel-font@master/dist/Zpix.ttf') format('truetype');
-    font-display: swap;
-  }
+/* 正文字体 */
+@font-face{
+  font-family: 'HYPixel';
+  src: url('fonts/zpix.ttf') format('truetype');
+  font-display: swap;
+}
+
+/* 标题字体 */
+@font-face{
+  font-family: 'TaikoRun';
+  src: url('fonts/taiko-run-heavy.ttf') format('truetype');
+  font-display: swap;
+}
 
   /* ============ 变量 & 基础 ============ */
   :root{
@@ -25,15 +33,17 @@
   }
   *{ box-sizing: border-box; }
   html,body{ height: 100%; }
-  body{
-    margin: 0;
-    background: var(--bg);
-    color: var(--fg);
-    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Heiti SC", 黑体, sans-serif;
-    -webkit-font-smoothing: antialiased;
+body{
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  letter-spacing: 0.02em;
+  font-family: 'HYPixel', "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", 黑体, sans-serif;
+  font-size: 18px;                  /* 像素字体建议用整数倍字号，见下方说明 */
+  -webkit-font-smoothing: none;     /* 像素字体关掉抗锯齿更清晰 */
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    min-height: 110vh;
   }
   img{ image-rendering: pixelated; }
 
@@ -45,15 +55,15 @@
   }
 
   /* ============ 顶部标题 ============ */
-  .site-header{ padding: 34px 0 22px; }
+  .site-header{ padding: 48px 0 22px; }
   .site-title{
     margin: 0;
-    font-size: 24px;
+    font-size: 48px;
     line-height: 1.4;
     letter-spacing: 0.04em;
     text-align: left;
     font-weight: 400;
-    font-family: 'Zpix', 'Press Start 2P', "Courier New", monospace;
+    font-family: 'TaikoRun', 'HYPixel', monospace;
   }
   .site-title a{ color: inherit; text-decoration: none; }
   .site-title a:hover{ opacity: .7; }
