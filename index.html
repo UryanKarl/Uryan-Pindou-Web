@@ -349,7 +349,8 @@ const FILTER_GROUPS = [
   { key: 'work', options: ['所有作品', '崩铁', '终末地', '摩尔庄园'] },
   { key: 'attr', options: ['所有属性', 'CP向', '大众向'] },
   { key: 'size', options: ['任意尺寸', '小图', '中图', '大图'] },
-  { key: 'cat',  options: ['所有类别', '收藏类', '实用类'] }
+  { key: 'cat',  options: ['所有类别', '收藏类', '实用类'] },
+  { key: 'sort', type: 'sort', options: ['从旧到新', '从新到旧'] }
 ];
 
 /* ---------------------------------------------------------
@@ -509,6 +510,7 @@ FILTER_GROUPS.forEach(g => { selected[g.key] = g.options[0]; });
 
 function matchWork(w){
   return FILTER_GROUPS.every(g => {
+    if (g.type === 'sort') return true;    // 排序组不参与过滤
     const v = selected[g.key];
     if (v === g.options[0]) return true;   // 第一项 = 不限
     return w[g.key] === v;
@@ -597,7 +599,11 @@ function renderGrid(){
   if (!grid) return;
   grid.innerHTML = '';
 
-  const list = WORKS.filter(matchWork);
+const list = WORKS.filter(matchWork);
+
+// 排序：从旧到新 / 从新到旧
+const desc = selected.sort === '从新到旧';
+list.sort((a, b) => desc ? b.seed - a.seed : a.seed - b.seed);
 
   if (!list.length){
     const p = document.createElement('p');
