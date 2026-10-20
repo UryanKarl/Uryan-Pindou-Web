@@ -39,8 +39,8 @@ body{
   color: var(--fg);
   letter-spacing: 0.02em;
   font-family: 'HYPixel', "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", 黑体, sans-serif;
-  font-size: 18px;                  /* 像素字体建议用整数倍字号，见下方说明 */
-  -webkit-font-smoothing: none;     /* 像素字体关掉抗锯齿更清晰 */
+  font-size: 18px;
+  -webkit-font-smoothing: none;
     display: flex;
     flex-direction: column;
     min-height: 110vh;
@@ -56,6 +56,15 @@ body{
 
   /* ============ 顶部标题 ============ */
   .site-header{ padding: 48px 0 22px; }
+
+  /* 标题 + 语言切换 同一行 */
+  .header-row{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
   .site-title{
     margin: 0;
     font-size: 48px;
@@ -64,7 +73,7 @@ body{
     text-align: left;
     font-weight: 400;
     font-family: 'TaikoRun', 'HYPixel', monospace;
-  overflow-wrap: anywhere;   /* 超长内容也能断行 */
+  overflow-wrap: anywhere;
   word-break: break-word;
   }
   .site-title a{
@@ -73,6 +82,40 @@ body{
 	display: inline;
   }
   .site-title a:hover{ opacity: .7; }
+
+  /* ---- 语言切换 ---- */
+  .lang-switch{
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding-top: 12px;
+    flex-shrink: 0;
+    font-size: 14px;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+  .lang-btn{
+    font-family: inherit;
+    font-size: inherit;
+    background: none;
+    border: 0;
+    padding: 2px 4px;
+    cursor: pointer;
+    color: var(--muted);
+    line-height: 1;
+    transition: color .15s;
+  }
+  .lang-btn:hover{ color: var(--fg); }
+  .lang-btn.active{
+    color: var(--fg);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .lang-sep{
+    color: var(--line);
+    font-size: 12px;
+  }
 
   main{
     flex: 1;
@@ -155,18 +198,22 @@ body{
   }
 @media (max-width: 640px){
   .site-header{
-    padding: 22px 0 16px;    /* 上下留白收紧，给标题更多空间 */
+    padding: 22px 0 16px;
   }
   .site-title{
-    font-size: 36px;         /* 缩小一档 */
-    line-height: 1.45;       /* 行高稍微放松，两行时更好看 */
+    font-size: 36px;
+    line-height: 1.45;
     letter-spacing: 0.02em;
+  }
+  .lang-switch{
+    padding-top: 6px;
+    font-size: 12px;
   }
 }
 
 @media (max-width: 400px){
   .site-title{
-    font-size: 24px;         /* 更窄的屏幕再缩一档 */
+    font-size: 24px;
     line-height: 1.5;
   }
 }
@@ -341,8 +388,13 @@ body{
 <body>
 
   <header class="site-header">
-    <div class="wrap">
-      <h1 class="site-title"><a href="#/">伊水_Uryan的拼豆图纸</a></h1>
+    <div class="wrap header-row">
+      <h1 class="site-title"><a href="#/" data-i18n="伊水_Uryan的拼豆图纸">伊水_Uryan的拼豆图纸</a></h1>
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" class="lang-btn" data-lang="zh">中</button>
+        <span class="lang-sep">/</span>
+        <button type="button" class="lang-btn" data-lang="en">ENG</button>
+      </div>
     </div>
   </header>
 
@@ -350,8 +402,8 @@ body{
 
   <footer class="site-footer">
     <div class="wrap">
-      <p class="f-line1">伊水_Uryan的拼豆图纸 · 个人拼豆图纸存档</p>
-      <p>站内图纸均为个人创作，欢迎同好参考交流，请勿用于商业用途。</p>
+      <p class="f-line1" data-i18n="伊水_Uryan的拼豆图纸 · 个人拼豆图纸存档">伊水_Uryan的拼豆图纸 · 个人拼豆图纸存档</p>
+      <p data-i18n="站内图纸均为个人创作，欢迎同好参考交流，请勿用于商业用途。">站内图纸均为个人创作，欢迎同好参考交流，请勿用于商业用途。</p>
       <p>© 2025 伊水_Uryan</p>
     </div>
   </footer>
@@ -378,83 +430,173 @@ const FILTER_GROUPS = [
 /* ---------------------------------------------------------
    作品数据
    ---------------------------------------------------------
-   · cover        ：封面图路径（首页缩略图 + 详情页大图）
+   · nameEn       ：英文名（可选）。填了英文模式下显示它，
+                    没填则回退显示 name
+   · cover        ：封面图路径
    · detailImages ：详情图路径数组（1~15 张）
-   · details      ：当 detailImages 没有填时，用占位图的数量
-   · seed         ：占位图的随机种子，只在没有真实图时用到
-   ---------------------------------------------------------
-   图片放在 index.html 同级的 images 文件夹里，
-   路径写相对路径，例如 'images/w01-cover.jpg'
+   · details      ：当 detailImages 没填时的占位图数量
+   · seed         ：占位图随机种子
    --------------------------------------------------------- */
 const WORKS = [
-  { id:'w01', name:'R瑞挂件·RK拎瑞琪',   work:'摩尔庄园',   attr:'CP向', size:'小图', cat:'收藏类', seed:101,
+  { id:'w01', name:'R瑞挂件·RK拎瑞琪', nameEn:'RK drag Ricky',   work:'摩尔庄园',   attr:'CP向', size:'小图', cat:'收藏类', seed:101,
     cover: 'images/01/cover.JPG',
     detailImages: ['images/01/cover.JPG','images/01/detail1.JPG'] },
-	
-  { id:'w02', name:'蜜椰邮票·脸蛋挤挤',     work:'崩铁',     attr:'CP向',   size:'小图', cat:'收藏类', seed:202,
+
+  { id:'w02', name:'蜜椰邮票·脸蛋挤挤', nameEn:'Cocostew Stamp·Squish the faces',   work:'崩铁',     attr:'CP向',   size:'小图', cat:'收藏类', seed:202,
     cover: 'images/02/cover.PNG',
     detailImages: ['images/02/detail1.jpg','images/02/detail2.PNG'] },
 
-  { id:'w03', name:'蜜椰·抱团',     work:'崩铁',     attr:'CP向', size:'小图', cat:'收藏类', seed:303,
+  { id:'w03', name:'蜜椰·抱团', nameEn:'Cocostew Stamp·Crowd into a ball',   work:'崩铁',     attr:'CP向', size:'小图', cat:'收藏类', seed:303,
     cover: 'images/03/cover.PNG',
     detailImages: [,'images/03/detail1.PNG','images/03/detail2.PNG','images/03/detail3.JPG'] },
 
-  { id:'w04', name:'敌厄邮票·生命花园摸奇美拉',   work:'崩铁',     attr:'CP向', size:'中图', cat:'收藏类', seed:404,
+  { id:'w04', name:'敌厄票根·奇美拉花园', nameEn:'Myph Ticket·Chimera Garden',   work:'崩铁',     attr:'CP向', size:'中图', cat:'收藏类', seed:404,
     cover: 'images/04/cover.PNG',
     detailImages: ['images/04/detail1.PNG','images/04/detail2.PNG'] },
 
-  { id:'w05', name:'蜜椰拓展扣·奇美拉的尾巴强而有力',     work:'崩铁',     attr:'CP向',   size:'中图', cat:'实用类', seed:505,
+  { id:'w05', name:'蜜椰拓展扣·奇美拉的尾巴强而有力', nameEn:'Cocostew Extender·Strong Tails of Chimeras',   work:'崩铁',     attr:'CP向',   size:'中图', cat:'实用类', seed:505,
     cover: 'images/05/cover.PNG',
     detailImages: ['images/05/detail1.PNG','images/05/detail2.PNG'] },
 
-  { id:'w06', name:'敌厄·小敌咪椰椰糕卡套',     work:'崩铁',     attr:'CP向', size:'小图', cat:'实用类', seed:606,
+  { id:'w06', name:'敌厄·小敌咪椰椰糕卡套', nameEn:'Myph Card Holder·Meowdei&Cococake',   work:'崩铁',     attr:'CP向', size:'小图', cat:'实用类', seed:606,
     cover: 'images/06/Cover.JPG',
     detailImages: ['images/06/detail1.PNG','images/06/detail2.PNG'] },
 
-  { id:'w07', name:'奇美拉抱抱卡套01·敌/白/金/黑',   work:'崩铁',   attr:'大众向',   size:'中图', cat:'实用类', seed:707,
+  { id:'w07', name:'奇美拉抱抱卡套01·敌/白/金/黑', nameEn:'Chimera Card Holder01·Dei/Phai/Khas/FR',   work:'崩铁',   attr:'大众向',   size:'中图', cat:'实用类', seed:707,
     cover: 'images/07/Cover.jpg',
     detailImages: ['images/07/detail1.JPG','images/07/detail2.JPG','images/07/detail3.JPG','images/07/detail4.JPG','images/07/detail5.JPG','images/07/detail6.JPG','images/07/detail7.JPG','images/07/detail8.JPG'] },
 
-  { id:'w08', name:'奇美拉抱抱卡套02·夏/雅/泡/怪',   work:'崩铁',   attr:'大众向',   size:'中图', cat:'实用类', seed:808,
+  { id:'w08', name:'奇美拉抱抱卡套02·夏/雅/泡/怪', nameEn:'Chimera Card Holder02·Anax/Agl/Bub/Weird',   work:'崩铁',   attr:'大众向',   size:'中图', cat:'实用类', seed:808,
     cover: 'images/08/Cover.jpg',
     detailImages: ['images/08/detail1.JPG','images/08/detail2.JPG','images/08/detail3.JPG','images/08/detail4.JPG','images/08/detail5.JPG','images/08/detail6.JPG','images/08/detail7.JPG','images/08/detail8.JPG'] },
 
-  { id:'w09', name:'奇美拉抱抱卡套03·堇/蝶/猫/缇',   work:'崩铁',   attr:'大众向',   size:'中图', cat:'实用类', seed:909,
+  { id:'w09', name:'奇美拉抱抱卡套03·堇/蝶/猫/缇', nameEn:'Chimera Card Holder03·Hya/Cas/Ciph/Tri',   work:'崩铁',   attr:'大众向',   size:'中图', cat:'实用类', seed:909,
     cover: 'images/09/Cover.jpg',
     detailImages: ['images/09/detail1.JPG','images/09/detail2.JPG','images/09/detail3.JPG','images/09/detail4.JPG','images/09/detail5.JPG','images/09/detail6.JPG','images/09/detail7.JPG','images/09/detail8.JPG'] },
 
-  { id:'w10', name:'奇美拉抱抱卡套04·德/昔/刻/海',   work:'崩铁',   attr:'大众向',   size:'中图', cat:'实用类', seed:1010,
+  { id:'w10', name:'奇美拉抱抱卡套04·德/昔/刻/海', nameEn:'Chimera Card Holder04·Dem/Cyr/Cery/Hyli',   work:'崩铁',   attr:'大众向',   size:'中图', cat:'实用类', seed:1010,
     cover: 'images/10/cover.jpg',
     detailImages: ['images/10/detail1.JPG','images/10/detail2.JPG','images/10/detail3.JPG','images/10/detail4.JPG','images/10/detail5.JPG','images/10/detail6.JPG','images/10/detail7.JPG','images/10/detail8.JPG'] },
 
-  { id:'w11', name:'奇美拉抱抱卡套05·刃/景/七/恒',   work:'崩铁',   attr:'大众向',   size:'中图', cat:'实用类', seed:1111,
+  { id:'w11', name:'奇美拉抱抱卡套05·刃/景/七/恒', nameEn:'Chimera Card Holder05·Blade/Jing/March/Heng',   work:'崩铁',   attr:'大众向',   size:'中图', cat:'实用类', seed:1111,
     cover: 'images/11/cover.jpg',
     detailImages: ['images/11/detail1.JPG','images/11/detail2.JPG','images/11/detail3.JPG','images/11/detail4.JPG','images/11/detail5.JPG','images/11/detail6.JPG','images/11/detail7.JPG','images/11/detail8.JPG','images/11/detail9.JPG','images/11/detail10.JPG'] },
 
-  { id:'w12', name:'奇美拉抱抱卡套06·日/拓/萤/塔',   work:'崩铁',   attr:'大众向',   size:'中图', cat:'实用类', seed:1212,
+  { id:'w12', name:'奇美拉抱抱卡套06·日/拓/萤/塔', nameEn:'Chimera Card Holder06·Sun/TB/Firefly/Herta',   work:'崩铁',   attr:'大众向',   size:'中图', cat:'实用类', seed:1212,
     cover: 'images/12/cover.jpg',
     detailImages: ['images/12/detail1.JPG','images/12/detail2.JPG','images/12/detail3.JPG','images/12/detail4.JPG','images/12/detail5.JPG','images/12/detail6.JPG','images/12/detail7.JPG','images/12/detail8.JPG'] },
 
-  { id:'w13', name:'奇美拉抱抱卡套07·来/月/桑/杰',   work:'崩铁',   attr:'大众向',   size:'中图', cat:'实用类', seed:1313,
+  { id:'w13', name:'奇美拉抱抱卡套07·来/月/桑/杰', nameEn:'Chimera Card Holder07·Lygus/Eve/Sam/Gep',   work:'崩铁',   attr:'大众向',   size:'中图', cat:'实用类', seed:1313,
     cover: 'images/13/cover.jpg',
     detailImages: ['images/13/detail1.JPG','images/13/detail2.JPG','images/13/detail3.JPG','images/13/detail4.JPG','images/13/detail5.JPG','images/13/detail6.JPG','images/13/detail7.JPG','images/13/detail8.JPG'] },
 
-  { id:'w14', name:'奇美拉抱抱卡套08·阮/芙/泉/泉',   work:'崩铁',   attr:'大众向',   size:'中图', cat:'实用类', seed:1414,
+  { id:'w14', name:'奇美拉抱抱卡套08·阮/芙/泉/泉', nameEn:'Chimera Card Holder08·RM/Kfk/Acheron',   work:'崩铁',   attr:'大众向',   size:'中图', cat:'实用类', seed:1414,
     cover: 'images/14/cover.jpg',
     detailImages: ['images/14/detail1.JPG','images/14/detail2.JPG','images/14/detail3.JPG','images/14/detail4.JPG','images/14/detail5.JPG','images/14/detail6.JPG','images/14/detail7.JPG','images/14/detail8.JPG'] },
 
-  { id:'w15', name:'蜜椰挂牌·HKS哈气大运',   work:'崩铁',   attr:'CP向',   size:'大图', cat:'实用类', seed:1515,
+  { id:'w15', name:'蜜椰挂牌·HKS哈气大运', nameEn:'Cocostew suitcase Hanger·HKS',   work:'崩铁',   attr:'CP向',   size:'大图', cat:'实用类', seed:1515,
     cover: 'images/15/cover.PNG',
     detailImages: ['images/15/detail1.PNG','images/15/detail2.PNG'] },
 
-  { id:'w16', name:'敌厄挂牌·敌迷迷白喵喵',   work:'崩铁',   attr:'CP向',   size:'大图', cat:'实用类', seed:1616,
+  { id:'w16', name:'敌厄挂牌·敌迷迷白喵喵', nameEn:'Myph suitcase Hanger·Kittys',   work:'崩铁',   attr:'CP向',   size:'大图', cat:'实用类', seed:1616,
     cover: 'images/16/cover.PNG',
     detailImages: ['images/16/detail1.PNG','images/16/detail2.PNG','images/16/detail3.PNG','images/16/detail4.PNG','images/16/detail5.PNG'] },
 
-  { id:'w17', name:'敌厄邮票·比个猫耳朵',   work:'崩铁',   attr:'CP向',   size:'小图', cat:'收藏类', seed:1717,
+  { id:'w17', name:'敌厄邮票·比个猫耳朵', nameEn:'Myph Stamp·Put a Kitty Ear',   work:'崩铁',   attr:'CP向',   size:'小图', cat:'收藏类', seed:1717,
     cover: 'images/17/detail1.JPG',
     detailImages: ['images/17/detail1.JPG'] }
 ];
+
+/* =========================================================
+   1.5 多语言
+   ========================================================= */
+const I18N = {
+  zh: {
+    '伊水_Uryan的拼豆图纸': '伊水_Uryan的拼豆图纸',
+    '伊水_Uryan的拼豆图纸 · 个人拼豆图纸存档': '伊水_Uryan的拼豆图纸 · 个人拼豆图纸存档',
+    '站内图纸均为个人创作，欢迎同好参考交流，请勿用于商业用途。': '站内图纸均为个人创作，欢迎同好参考交流，请勿用于商业用途。',
+
+    '所有作品': '所有作品',
+    '崩铁': '崩铁',
+    '终末地': '终末地',
+    '摩尔庄园': '摩尔庄园',
+    '所有属性': '所有属性',
+    'CP向': 'CP向',
+    '大众向': '大众向',
+    '任意尺寸': '任意尺寸',
+    '小图': '小图',
+    '中图': '中图',
+    '大图': '大图',
+    '所有类别': '所有类别',
+    '收藏类': '收藏类',
+    '实用类': '实用类',
+    '从旧到新': '从旧到新',
+    '从新到旧': '从新到旧',
+
+    '← 返回全部作品': '← 返回全部作品',
+    '暂无符合条件的图纸': '暂无符合条件的图纸',
+    '拼豆图纸': '拼豆图纸',
+    '详情图': '详情图',
+    '关闭': '关闭'
+  },
+  en: {
+    '伊水_Uryan的拼豆图纸': "Uryan's Perler Bead Patterns",
+    '伊水_Uryan的拼豆图纸 · 个人拼豆图纸存档': "Uryan's Perler Bead Patterns · Personal Archive",
+    '站内图纸均为个人创作，欢迎同好参考交流，请勿用于商业用途。': 'All patterns are original creations, shared for reference and exchange. Please do not use them commercially.',
+
+    '所有作品': 'All Works',
+    '崩铁': 'Honkai: Star Rail',
+    '终末地': 'Arknights: Endfield',
+    '摩尔庄园': 'Mole Manor',
+    '所有属性': 'All Types',
+    'CP向': 'Ship',
+    '大众向': 'General',
+    '任意尺寸': 'Any Size',
+    '小图': 'Small',
+    '中图': 'Medium',
+    '大图': 'Large',
+    '所有类别': 'All Categories',
+    '收藏类': 'Collectible',
+    '实用类': 'Practical',
+    '从旧到新': 'Oldest First',
+    '从新到旧': 'Newest First',
+
+    '← 返回全部作品': '← Back to All Works',
+    '暂无符合条件的图纸': 'No patterns match the current filters.',
+    '拼豆图纸': ' Perler Bead Pattern',
+    '详情图': 'Detail',
+    '关闭': 'Close'
+  }
+};
+
+let lang = 'zh';
+try { lang = localStorage.getItem('lang') || 'zh'; } catch(e){}
+if (lang !== 'zh' && lang !== 'en') lang = 'zh';
+
+/* 通用文本翻译 */
+function t(s){
+  const dict = I18N[lang] || I18N.zh;
+  return (dict[s] !== undefined) ? dict[s] : s;
+}
+
+/* 作品名翻译：英文模式优先 nameEn，缺失则回退中文 name */
+function wname(w){
+  if (lang === 'en' && w.nameEn) return w.nameEn;
+  return w.name;
+}
+
+/* 更新静态元素（头部标题、页脚、语言按钮状态） */
+function applyStaticLang(){
+  document.documentElement.lang = (lang === 'zh') ? 'zh-CN' : 'en';
+  document.title = t('伊水_Uryan的拼豆图纸');
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+}
 
 /* =========================================================
    2. 工具函数
@@ -513,8 +655,7 @@ function artDataURL(seed, size = 800){
   return url;
 }
 
-/* 图片加载失败时自动回退到占位图
-   （error 事件不冒泡，必须用捕获阶段监听） */
+/* 图片加载失败时自动回退到占位图 */
 document.addEventListener('error', function(e){
   const el = e.target;
   if (!el || el.tagName !== 'IMG') return;
@@ -532,9 +673,9 @@ FILTER_GROUPS.forEach(g => { selected[g.key] = g.options[0]; });
 
 function matchWork(w){
   return FILTER_GROUPS.every(g => {
-    if (g.type === 'sort') return true;    // 排序组不参与过滤
+    if (g.type === 'sort') return true;
     const v = selected[g.key];
-    if (v === g.options[0]) return true;   // 第一项 = 不限
+    if (v === g.options[0]) return true;
     return w[g.key] === v;
   });
 }
@@ -556,7 +697,7 @@ function buildFilters(){
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'filter-btn';
-    btn.textContent = selected[g.key];
+    btn.textContent = t(selected[g.key]);
 
     const caret = document.createElement('span');
     caret.className = 'caret';
@@ -568,7 +709,8 @@ function buildFilters(){
 
     g.options.forEach(opt => {
       const li = document.createElement('li');
-      li.textContent = opt;
+      li.textContent = t(opt);
+      li.dataset.value = opt;
       if (opt === selected[g.key]) li.classList.add('selected');
 
       li.addEventListener('click', e => {
@@ -603,10 +745,10 @@ function refreshFilters(){
     const g = FILTER_GROUPS[i];
     const btn = f.querySelector('.filter-btn');
     if (btn.firstChild && btn.firstChild.nodeType === 3){
-      btn.firstChild.nodeValue = selected[g.key];
+      btn.firstChild.nodeValue = t(selected[g.key]);
     }
     f.querySelectorAll('.dropdown li').forEach(li => {
-      li.classList.toggle('selected', li.textContent === selected[g.key]);
+      li.classList.toggle('selected', li.dataset.value === selected[g.key]);
     });
   });
 }
@@ -630,13 +772,12 @@ list.sort((a, b) => desc ? b.seed - a.seed : a.seed - b.seed);
   if (!list.length){
     const p = document.createElement('p');
     p.className = 'empty';
-    p.textContent = '暂无符合条件的图纸';
+    p.textContent = t('暂无符合条件的图纸');
     grid.appendChild(p);
     return;
   }
 
   list.forEach(w => {
-    /* 有真实封面就用真实封面，否则用占位图；加载失败也会自动回退 */
     const fallback = artDataURL(w.seed, 700);
     const coverSrc = w.cover || fallback;
 
@@ -646,8 +787,8 @@ list.sort((a, b) => desc ? b.seed - a.seed : a.seed - b.seed);
     a.innerHTML =
       `<div class="thumb">
          <img src="${coverSrc}" data-fallback="${fallback}"
-              alt="${w.name}拼豆图纸" loading="lazy">
-         <span class="thumb-name">${w.name}</span>
+              alt="${wname(w)}${t('拼豆图纸')}" loading="lazy">
+         <span class="thumb-name">${wname(w)}</span>
        </div>`;
     grid.appendChild(a);
   });
@@ -676,7 +817,7 @@ function renderDetail(w){
   const back = document.createElement('a');
   back.className = 'back';
   back.href = '#/';
-  back.textContent = '← 返回全部作品';
+  back.textContent = t('← 返回全部作品');
   app.appendChild(back);
 
   const detail = document.createElement('div');
@@ -691,14 +832,14 @@ function renderDetail(w){
   z1.innerHTML =
     `<div class="cover">
        <img src="${coverSrc}" data-fallback="${coverFallback}"
-            alt="${w.name}拼豆图纸封面">
+            alt="${wname(w)}${t('拼豆图纸')}">
      </div>
-     <h2 class="work-name">${w.name}</h2>
+     <h2 class="work-name">${wname(w)}</h2>
      <div class="tags">
-       <span class="tag">${w.work}</span>
-       <span class="tag">${w.attr}</span>
-       <span class="tag">${w.size}</span>
-       <span class="tag">${w.cat}</span>
+       <span class="tag">${t(w.work)}</span>
+       <span class="tag">${t(w.attr)}</span>
+       <span class="tag">${t(w.size)}</span>
+       <span class="tag">${t(w.cat)}</span>
      </div>`;
 
   /* ---- 2 区：详情图小预览 ---- */
@@ -708,10 +849,6 @@ function renderDetail(w){
   const previews = document.createElement('div');
   previews.className = 'previews';
 
-  /* 组装详情图列表：最多 15 张
-     - 填了 detailImages 就用真实图
-     - 没填就按 details 数量生成占位图
-     - 每张图都带 data-fallback，加载失败自动回退 */
   let imgs = [];
   if (Array.isArray(w.detailImages) && w.detailImages.length){
     imgs = w.detailImages.slice(0, 15).map((src, i) => ({
@@ -732,11 +869,10 @@ function renderDetail(w){
     btn.className = 'preview';
     btn.innerHTML =
       `<img src="${item.src}" data-fallback="${item.fallback}"
-            alt="${w.name} 详情图 ${i + 1}" loading="lazy">`;
+            alt="${wname(w)} ${t('详情图')} ${i + 1}" loading="lazy">`;
 
     btn.addEventListener('click', () => {
       const img = btn.querySelector('img');
-      /* 用当前实际显示的图（可能已回退为占位图）打开灯箱 */
       openLightbox(img.getAttribute('src'), img.alt);
     });
 
@@ -796,6 +932,25 @@ function route(){
   window.scrollTo(0, 0);
 }
 
+/* =========================================================
+   8. 语言切换 & 初始化
+   ========================================================= */
+function setLang(l){
+  if (l === lang) return;
+  lang = l;
+  try { localStorage.setItem('lang', l); } catch(e){}
+  applyStaticLang();
+  route();
+}
+
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => setLang(btn.dataset.lang));
+});
+
+const lbCloseBtn = document.getElementById('lbClose');
+lbCloseBtn.setAttribute('aria-label', t('关闭'));
+
+applyStaticLang();
 window.addEventListener('hashchange', route);
 route();
 </script>
