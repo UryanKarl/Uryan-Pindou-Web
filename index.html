@@ -387,7 +387,7 @@ const FILTER_GROUPS = [
   { key: 'attr', options: ['所有属性', 'CP向', '大众向'] },
   { key: 'size', options: ['任意尺寸', '小图', '中图', '大图'] },
   { key: 'cat',  options: ['所有类别', '收藏类', '实用类'] },
-  { key: 'sort', type: 'sort', options: ['从旧到新', '从新到旧'] }
+  { key: 'sort', type: 'sort', options: ['从新到旧', '从旧到新'] }
 ];
 
 /* ---------------------------------------------------------
@@ -402,7 +402,8 @@ const FILTER_GROUPS = [
 const WORKS = [
   { id:'w01', name:'R瑞挂件·RK拎瑞琪', nameEn:'RK drag Ricky', work:'摩尔庄园', attr:'CP向', size:'小图', cat:'收藏类', seed:101,
     cover: 'images/01/Cover.PNG',
-    detailImages: ['images/01/detail1.JPG','images/01/detail2.JPG'] },
+    photoCover: 'images/01/photo1.jpg',
+    detailImages: ['images/01/detail1.JPG','images/01/detail2.JPG','images/01/photo1.jpg'] },
 
   { id:'w02', name:'蜜椰邮票·脸蛋挤挤', nameEn:'Cocostew Stamp·Squish the faces', work:'崩铁', attr:'CP向', size:'小图', cat:'收藏类', seed:202,
     cover: 'images/02/cover.PNG',
@@ -463,21 +464,27 @@ const WORKS = [
 
   { id:'w14', name:'奇美拉抱抱卡套08·阮/芙/泉/泉', nameEn:'Chimera Card Holder08·RM/Kfk/Acheron', work:'崩铁', attr:'大众向', size:'中图', cat:'实用类', seed:1414,
     cover: 'images/14/cover.jpg',
-    detailImages: ['images/14/detail1.JPG','images/14/detail2.JPG','images/14/detail3.JPG','images/14/detail4.JPG','images/14/detail5.JPG','images/14/detail6.JPG','images/14/detail7.JPG','images/14/detail8.JPG'] },
+    photoCover: 'images/14/photo.jpg',
+    detailImages: ['images/14/detail1.JPG','images/14/detail2.JPG','images/14/detail3.JPG','images/14/detail4.JPG','images/14/detail5.JPG','images/14/detail6.JPG','images/14/detail7.JPG','images/14/detail8.JPG','images/14/photo2.jpg'] },
 
-  { id:'w15', name:'蜜椰挂牌·HKS哈气大运', nameEn:'Cocostew suitcase Hanger·HKS', work:'崩铁', attr:'CP向', size:'大图', cat:'实用类', seed:1515,
+  { id:'w15', name:'蜜椰挂牌·HKS哈气大运', nameEn:'Cocostew Luggage Tag·HKS', work:'崩铁', attr:'CP向', size:'大图', cat:'实用类', seed:1515,
     cover: 'images/15/cover.PNG',
     photoCover: 'images/15/photo.jpg',
     detailImages: ['images/15/detail1.PNG','images/15/detail2.PNG','images/15/photo.jpg','images/15/photo2.jpg'] },
 
-  { id:'w16', name:'敌厄挂牌·敌咪咪白喵喵比心心', nameEn:'Myphai suitcase Hanger·Meowdei&Phainyan with heart-shape tails', work:'崩铁', attr:'CP向', size:'大图', cat:'实用类', seed:1616,
+  { id:'w16', name:'敌厄挂牌·敌咪咪白喵喵比心心', nameEn:'Myphai Hang Tag·Meowdei&Phainyan with heart-shape tails', work:'崩铁', attr:'CP向', size:'大图', cat:'实用类', seed:1616,
     cover: 'images/16/cover.PNG',
-    photoCover: 'images/16/photo1.jpg',
-    detailImages: ['images/16/detail0.PNG','images/16/detail1.PNG','images/16/detail2.PNG','images/16/detail3.PNG','images/16/detail4.PNG','images/16/detail5.PNG','images/16/photo1.jpg','images/16/photo3.jpg'] },
+    photoCover: 'images/16/photo.jpg',
+    detailImages: ['images/16/detail0.PNG','images/16/detail1.PNG','images/16/detail2.PNG','images/16/detail3.PNG','images/16/detail4.PNG','images/16/detail5.PNG','images/16/photo1.jpg','images/16/photo3.jpg','images/16/photo5.jpg'] },
 
   { id:'w17', name:'敌厄邮票·比个猫耳朵', nameEn:'Myphai Stamp·Put a Kitty Ear', work:'崩铁', attr:'CP向', size:'小图', cat:'收藏类', seed:1717,
     cover: 'images/17/Cover.PNG',
-    detailImages: ['images/17/detail1.JPG'] }
+    detailImages: ['images/17/detail1.JPG'] },
+
+  { id:'w18', name:'白厄挂牌·黑白金猫咪', nameEn:'Phainon Hang Tag·3 Kitty in 1', work:'崩铁', attr:'大众向', size:'大图', cat:'实用类', seed:1818,
+    cover: 'images/18/Cover.PNG',
+    photoCover: 'images/18/photo.jpg',
+    detailImages: ['images/18/detail1.PNG','images/18/detail2.PNG','images/18/photo.jpg'] }
 ];
 
 /* =========================================================
